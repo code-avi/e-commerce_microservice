@@ -1,9 +1,13 @@
 package com.ecommerce.user_service.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
 public class User {
 
     @Id
@@ -18,6 +22,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
 
 }
 
