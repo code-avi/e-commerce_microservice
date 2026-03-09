@@ -20,9 +20,9 @@ public class JwtService {
 
         return Jwts.builder()
                 .setSubject(username)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setIssuedAt(new Date(System.currentTimeMillis())) // token creation time
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours expiry
-                .signWith(SECRET_KEY)
+                .signWith(SECRET_KEY) //sign token with secret key
                 .compact();
     }
 
@@ -35,7 +35,7 @@ public class JwtService {
     private Claims extractAllClaims(String token) {
 
         return Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY)
+                .setSigningKey(SECRET_KEY) // verify token using the secret key
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

@@ -13,6 +13,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtFilter;
 
+    // injecting the custom jwt filter
     public SecurityConfig(JwtAuthenticationFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
     }
@@ -21,12 +22,15 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
+                // disable CSRF for simplicity (not recommended for production)
                 .csrf(AbstractHttpConfigurer::disable)
+                // Define which endpoints are public and which require auth
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/auth/**").permitAll()  // login and register endpoints
+                        .requestMatchers("/h2-console/**").permitAll() // allow H2 console access
+                        .anyRequest().authenticated()  // all other endpoints require auth
                 )
+                // require for H2 console to inside browser
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()));
 
         // Register JWT filter before auth
@@ -36,6 +40,7 @@ public class SecurityConfig {
     }
 
     @Bean
+    // pass encider user to hash user pass before save in DB
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }

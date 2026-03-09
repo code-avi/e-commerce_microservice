@@ -3,11 +3,12 @@ package com.ecommerce.user_service.dto;
 
 import com.ecommerce.user_service.entity.Role;
 
+// DTO used to receive user registration data from the client
 public class RegisterRequest {
 
     private String username;
     private String email;
-    private String password;
+    private String password; // raw pass sent during registration
     private Role role;
 
     public String getUsername() {

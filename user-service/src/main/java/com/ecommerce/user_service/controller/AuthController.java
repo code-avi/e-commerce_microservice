@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+// Base path for all auth releated API's
 public class AuthController {
 
     private final AuthService authService;
@@ -15,14 +16,14 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/register")
+    @PostMapping("/register") // API for user registration
     public String register(@RequestBody RegisterRequest request) {
 
         authService.register(request);
 
         return "User registered successfully";
     }
-    @PostMapping("/login")
+    @PostMapping("/login") // Auth user and returns jwt token
     public String login(@RequestBody LoginRequest request) {
 
         return authService.login(

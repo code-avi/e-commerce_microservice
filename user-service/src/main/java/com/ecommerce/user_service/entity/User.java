@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity
-@Table(name = "users")
+@Entity // marks class as JPA entity  mapped to DB
+@Table(name = "users") // specify table in DB
 @Getter
 @Setter
 public class User {
@@ -21,7 +21,7 @@ public class User {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Role role; // store enum as string in DB(instead of numbers)
 
 
 }

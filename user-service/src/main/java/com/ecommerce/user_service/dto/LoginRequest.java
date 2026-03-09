@@ -1,5 +1,5 @@
 package com.ecommerce.user_service.dto;
-
+// DTO used to receive login credential from the client
 public class LoginRequest {
 
     private String username;

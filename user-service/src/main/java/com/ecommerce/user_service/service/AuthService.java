@@ -22,7 +22,7 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
     }
-
+    // Handles new user registration
     public void register(RegisterRequest request) {
 
         User user = new User();
@@ -35,17 +35,19 @@ public class AuthService {
 
         user.setRole(request.getRole());
 
+        // Persist user into database
         userRepository.save(user);
     }
+    // Handles user login and returns JWT token if credentials are OK
     public String login(String username, String password) {
-
+// Find user in DB
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             return "Invalid password";
         }
-
+        // generate JWT token for auth user
         return jwtService.generateToken(user.getUsername());
     }
 

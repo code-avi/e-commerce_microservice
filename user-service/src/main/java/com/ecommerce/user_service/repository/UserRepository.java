@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
+    // Custom query method to find a user used during login to verify user
     Optional<User> findByUsername(String username);
 
 }
