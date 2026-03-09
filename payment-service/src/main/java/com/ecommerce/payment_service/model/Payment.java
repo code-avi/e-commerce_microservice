@@ -1,4 +1,4 @@
-package com.ecommerce.payment_service.entity;
+package com.ecommerce.payment_service.model;
 
 import jakarta.persistence.*;
 
