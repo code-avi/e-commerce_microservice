@@ -30,4 +30,10 @@ public class AuthController {
                 request.getPassword()
         );
     }
+    // for checking if the protected API is working
+    @GetMapping("/test")
+    public String test() {
+
+        return "Protected API working";
+    }
 }
