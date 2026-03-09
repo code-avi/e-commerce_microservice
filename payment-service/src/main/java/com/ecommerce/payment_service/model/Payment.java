@@ -1,6 +1,7 @@
 package com.ecommerce.payment_service.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "payments")
@@ -8,27 +9,39 @@ public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "payment_id")
+    private Long paymentId;
 
+    @Column(name = "order_id", nullable = false)
     private Long orderId;
 
+    @Column(nullable = false)
     private Double amount;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method", nullable = false)
+    private PaymentMethod paymentMethod;
 
-    private String paymentMethod;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PaymentStatus status;
+
+    @Column(name = "transaction_date")
+    private LocalDateTime transactionDate;
 
     public Payment() {}
 
-    public Payment(Long orderId, Double amount, String status, String paymentMethod) {
+    public Payment(Long orderId, Double amount, PaymentMethod paymentMethod,
+                   PaymentStatus status, LocalDateTime transactionDate) {
         this.orderId = orderId;
         this.amount = amount;
-        this.status = status;
         this.paymentMethod = paymentMethod;
+        this.status = status;
+        this.transactionDate = transactionDate;
     }
 
-    public Long getId() {
-        return id;
+    public Long getPaymentId() {
+        return paymentId;
     }
 
     public Long getOrderId() {
@@ -39,16 +52,20 @@ public class Payment {
         return amount;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public String getPaymentMethod() {
+    public PaymentMethod getPaymentMethod() {
         return paymentMethod;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public PaymentStatus getStatus() {
+        return status;
+    }
+
+    public LocalDateTime getTransactionDate() {
+        return transactionDate;
+    }
+
+    public void setPaymentId(Long paymentId) {
+        this.paymentId = paymentId;
     }
 
     public void setOrderId(Long orderId) {
@@ -59,11 +76,15 @@ public class Payment {
         this.amount = amount;
     }
 
-    public void setStatus(String status) {
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public void setStatus(PaymentStatus status) {
         this.status = status;
     }
 
-    public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
+    public void setTransactionDate(LocalDateTime transactionDate) {
+        this.transactionDate = transactionDate;
     }
 }
