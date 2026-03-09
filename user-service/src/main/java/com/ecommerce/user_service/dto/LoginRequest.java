@@ -1,7 +1,5 @@
 package com.ecommerce.user_service.dto;
 
-
-
 public class LoginRequest {
 
     private String username;
