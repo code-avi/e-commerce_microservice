@@ -3,15 +3,19 @@ package com.ecommerce.user_service.service;
 import com.ecommerce.user_service.dto.RegisterRequest;
 import com.ecommerce.user_service.entity.User;
 import com.ecommerce.user_service.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthService(UserRepository userRepository) {
+    public AuthService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public void register(RegisterRequest request) {
@@ -20,9 +24,13 @@ public class AuthService {
 
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
+
+        // PASSWORD ENCRYPTION
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
         user.setRole(request.getRole());
 
         userRepository.save(user);
     }
+
 }
