@@ -12,10 +12,10 @@ public class Payment {
     @Column(name = "payment_id")
     private Long paymentId;
 
-    @Column(name = "order_id", nullable = false)
+    @Column(name = "order_id", nullable = false, unique = true)
     private Long orderId;
 
-    @Column(nullable = false)
+    @Column(name = "amount", nullable = false)
     private Double amount;
 
     @Enumerated(EnumType.STRING)
@@ -23,10 +23,10 @@ public class Payment {
     private PaymentMethod paymentMethod;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "status", nullable = false)
     private PaymentStatus status;
 
-    @Column(name = "transaction_date")
+    @Column(name = "transaction_date", nullable = false)
     private LocalDateTime transactionDate;
 
     public Payment() {}
@@ -56,7 +56,7 @@ public class Payment {
         return paymentMethod;
     }
 
-    public PaymentStatus getStatus() {
+    public PaymentStatus getPaymentStatus() {
         return status;
     }
 
@@ -80,11 +80,16 @@ public class Payment {
         this.paymentMethod = paymentMethod;
     }
 
-    public void setStatus(PaymentStatus status) {
+    public void setPaymentStatus(PaymentStatus status) {
         this.status = status;
     }
 
     public void setTransactionDate(LocalDateTime transactionDate) {
         this.transactionDate = transactionDate;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        transactionDate = LocalDateTime.now();
     }
 }
