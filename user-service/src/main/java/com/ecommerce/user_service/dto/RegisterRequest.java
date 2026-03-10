@@ -1,4 +1,3 @@
-
 package com.ecommerce.user_service.dto;
 
 import com.ecommerce.user_service.entity.Role;

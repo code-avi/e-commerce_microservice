@@ -32,9 +32,10 @@ public class AuthController {
         );
     }
     // for checking if the protected API is working
+    // NOTE: This is under /auth/** which is permitAll, so it does NOT require a token.
+    // Use /api/test (below) to verify JWT-protected access.
     @GetMapping("/test")
     public String test() {
-
-        return "Protected API working";
+        return "Auth endpoint working (public)";
     }
 }

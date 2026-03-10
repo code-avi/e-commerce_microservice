@@ -1,6 +1,7 @@
 package com.ecommerce.user_service.service;
 
 import com.ecommerce.user_service.dto.RegisterRequest;
+import com.ecommerce.user_service.entity.Role;
 import com.ecommerce.user_service.entity.User;
 import com.ecommerce.user_service.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,7 +34,7 @@ public class AuthService {
         // PASSWORD ENCRYPTION
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        user.setRole(request.getRole());
+        user.setRole(request.getRole() != null ? request.getRole() : Role.USER);
 
         // Persist user into database
         userRepository.save(user);
