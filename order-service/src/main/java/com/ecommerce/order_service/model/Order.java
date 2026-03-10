@@ -1,6 +1,7 @@
 package com.ecommerce.order_service.model;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -22,7 +23,11 @@ public class Order {
     private LocalDateTime orderDate;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<OrderItem> items;
+
+    public Order() {
+    }
 
     public Order(Long orderId, Long userId, OrderStatus status, Double totalAmount, LocalDateTime orderDate, List<OrderItem> items) {
         this.orderId = orderId;
