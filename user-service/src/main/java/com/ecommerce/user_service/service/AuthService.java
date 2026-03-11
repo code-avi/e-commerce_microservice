@@ -4,9 +4,14 @@ import com.ecommerce.user_service.dto.RegisterRequest;
 import com.ecommerce.user_service.entity.Role;
 import com.ecommerce.user_service.entity.User;
 import com.ecommerce.user_service.repository.UserRepository;
+import com.ecommerce.user_service.security.JwtService;
+
+import com.ecommerce.user_service.exception.UserNotFoundException;
+import com.ecommerce.user_service.exception.InvalidPasswordException;
+import com.ecommerce.user_service.exception.DuplicateUserException;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.ecommerce.user_service.security.JwtService;
 
 @Service
 public class AuthService {
@@ -23,33 +28,37 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
     }
-    // Handles new user registration
+
+    // USER REGISTRATION
     public void register(RegisterRequest request) {
+
+        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+            throw new DuplicateUserException("DUPLICATE_USER");
+        }
 
         User user = new User();
 
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
 
-        // PASSWORD ENCRYPTION
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
+        // allow role from request for now
         user.setRole(request.getRole() != null ? request.getRole() : Role.USER);
 
-        // Persist user into database
         userRepository.save(user);
     }
-    // Handles user login and returns JWT token if credentials are OK
+
+    // USER LOGIN
     public String login(String username, String password) {
-// Find user in DB
+
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("USER_NOT_FOUND"));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            return "Invalid password";
+            throw new InvalidPasswordException("INVALID_PASSWORD");
         }
-        // generate JWT token for auth user
+
         return jwtService.generateToken(user.getUsername());
     }
-
 }
