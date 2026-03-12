@@ -1,6 +1,7 @@
 package com.ecommerce.payment_service.controller;
 
-import com.ecommerce.payment_service.model.Payment;
+import com.ecommerce.payment_service.dto.PaymentRequestDTO;
+import com.ecommerce.payment_service.dto.PaymentResponseDTO;
 import com.ecommerce.payment_service.service.PaymentService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,26 +18,26 @@ public class PaymentController {
 
     // Create Payment
     @PostMapping
-    public Payment createPayment(@RequestBody Payment payment) {
-        return paymentService.savePayment(payment);
+    public PaymentResponseDTO createPayment(@RequestBody PaymentRequestDTO paymentRequest) {
+        return paymentService.savePayment(paymentRequest);
     }
 
     // Get Payment by ID
     @GetMapping("/{id}")
-    public Payment getPaymentById(@PathVariable Long id) {
+    public PaymentResponseDTO getPaymentById(@PathVariable Long id) {
         return paymentService.getPaymentById(id);
     }
 
     // Get All Payments
     @GetMapping
-    public List<Payment> getAllPayments() {
+    public List<PaymentResponseDTO> getAllPayments() {
         return paymentService.getAllPayments();
     }
 
     // Update Payment Status
     @PutMapping("/{id}")
-    public Payment updatePayment(@PathVariable Long id, @RequestBody Payment payment) {
-        return paymentService.updatePayment(id, payment);
+    public PaymentResponseDTO updatePayment(@PathVariable Long id, @RequestBody PaymentRequestDTO paymentRequest) {
+        return paymentService.updatePayment(id, paymentRequest);
     }
 
     // Delete Payment

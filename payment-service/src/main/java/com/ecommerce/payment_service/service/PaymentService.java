@@ -2,11 +2,16 @@ package com.ecommerce.payment_service.service;
 
 import com.ecommerce.payment_service.model.Payment;
 import com.ecommerce.payment_service.repository.PaymentRepository;
+import com.ecommerce.payment_service.dto.PaymentRequestDTO;
+import com.ecommerce.payment_service.dto.PaymentResponseDTO;
+import com.ecommerce.payment_service.exception.PaymentNotFoundException;
+import com.ecommerce.payment_service.model.PaymentMethod;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PaymentService {
@@ -15,39 +20,78 @@ public class PaymentService {
     private PaymentRepository paymentRepository;
 
     // Save Payment
-    public Payment savePayment(Payment payment) {
-        return paymentRepository.save(payment);
+    public PaymentResponseDTO savePayment(PaymentRequestDTO request) {
+
+        Payment payment = new Payment();
+        payment.setOrderId(request.getOrderId());
+        payment.setAmount(request.getAmount());
+        payment.setPaymentMethod(
+                PaymentMethod.valueOf(request.getPaymentMethod())
+        );
+
+        Payment savedPayment = paymentRepository.save(payment);
+
+        return convertToDTO(savedPayment);
     }
 
     // Get Payment By ID
-    public Payment getPaymentById(Long id) {
-        return paymentRepository.findById(id).orElse(null);
+    public PaymentResponseDTO getPaymentById(Long id) {
+
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(() -> new PaymentNotFoundException("Payment not found with id: " + id));
+
+        return convertToDTO(payment);
     }
 
     // Get All Payments
-    public List<Payment> getAllPayments() {
-        return paymentRepository.findAll();
+    public List<PaymentResponseDTO> getAllPayments() {
+
+        List<Payment> payments = paymentRepository.findAll();
+
+        return payments.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     // Update Payment
-    public Payment updatePayment(Long id, Payment paymentDetails) {
+    public PaymentResponseDTO updatePayment(Long id, PaymentRequestDTO paymentDetails) {
 
-        Payment payment = paymentRepository.findById(id).orElse(null);
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(() -> new PaymentNotFoundException("Payment not found with id: " + id));
 
-        if(payment != null) {
-            payment.setOrderId(paymentDetails.getOrderId());
-            payment.setAmount(paymentDetails.getAmount());
-            payment.setPaymentMethod(paymentDetails.getPaymentMethod());
-            payment.setPaymentStatus(paymentDetails.getPaymentStatus());
+        payment.setOrderId(paymentDetails.getOrderId());
+        payment.setAmount(paymentDetails.getAmount());
+        payment.setPaymentMethod(
+                PaymentMethod.valueOf(paymentDetails.getPaymentMethod())
+        );
 
-            return paymentRepository.save(payment);
-        }
+        Payment updatedPayment = paymentRepository.save(payment);
 
-        return null;
+        return convertToDTO(updatedPayment);
     }
 
     // Delete Payment
     public void deletePayment(Long id) {
+
+        if(!paymentRepository.existsById(id)) {
+            throw new PaymentNotFoundException("Payment not found with id: " + id);
+        }
+
         paymentRepository.deleteById(id);
+    }
+
+    // Convert Entity -> DTO
+    private PaymentResponseDTO convertToDTO(Payment payment) {
+
+        PaymentResponseDTO dto = new PaymentResponseDTO();
+
+        dto.setPaymentId(payment.getPaymentId());
+        dto.setOrderId(payment.getOrderId());
+        dto.setAmount(payment.getAmount());
+        dto.setPaymentMethod(payment.getPaymentMethod().name());
+        dto.setStatus(payment.getPaymentStatus().name());
+        dto.setTransactionDate(payment.getTransactionDate());
+
+        return dto;
     }
 }
