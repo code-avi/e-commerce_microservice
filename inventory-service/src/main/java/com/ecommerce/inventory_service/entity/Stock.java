@@ -1,42 +1,41 @@
 package com.ecommerce.inventory_service.entity;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 public class Stock {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long stockId;
-
     private Long productId;
 
-    private int quantity;
+    private int availableQuantity;
 
-    public Stock(){}
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "product_id")
+    @JsonBackReference
+    private Product product;
 
-    public Stock(Long productId, int quantity){
-        this.productId = productId;
-        this.quantity = quantity;
-    }
-
-    public Long getStockId() {
-        return stockId;
-    }
+    public Stock() {}
 
     public Long getProductId() {
         return productId;
     }
 
-    public void setProductId(Long productId) {
-        this.productId = productId;
+    public int getAvailableQuantity() {
+        return availableQuantity;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public void setAvailableQuantity(int availableQuantity) {
+        this.availableQuantity = availableQuantity;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
     }
 }

@@ -1,6 +1,8 @@
 package com.ecommerce.inventory_service.entity;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 
 @Entity
 public class Product {
@@ -9,27 +11,28 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productId;
 
-    private String productName;
+    private String name;
 
     private double price;
 
-    public Product() {}
+    private String details;
 
-    public Product(String productName, double price) {
-        this.productName = productName;
-        this.price = price;
-    }
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private Stock stock;
+
+    public Product() {}
 
     public Long getProductId() {
         return productId;
     }
 
-    public String getProductName() {
-        return productName;
+    public String getName() {
+        return name;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public double getPrice() {
@@ -38,5 +41,17 @@ public class Product {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
+    }
+
+    public Stock getStock() {
+        return stock;
     }
 }

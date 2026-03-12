@@ -15,41 +15,62 @@ public class InventoryController {
     @Autowired
     private InventoryService inventoryService;
 
-    // Admin: Add product
+    // Add new product
     @PostMapping("/product")
     public Product addProduct(@RequestBody Product product){
         return inventoryService.addProduct(product);
     }
 
-    // Admin: Add stock
-    @PostMapping("/stock")
-    public Stock addStock(@RequestBody Stock stock){
-        return inventoryService.addStock(stock);
-    }
-
-    // Admin: View all products
+    // Get all products
     @GetMapping("/products")
-    public List<Product> getProducts(){
+    public List<Product> getAllProducts(){
         return inventoryService.getAllProducts();
     }
 
-    // Customer/Admin: Check stock
+    // Get product details
+    @GetMapping("/product/{productId}")
+    public Product getProduct(@PathVariable Long productId){
+        return inventoryService.getProduct(productId);
+    }
+
+    // Delete product
+    @DeleteMapping("/product/{productId}")
+    public String deleteProduct(@PathVariable Long productId){
+        inventoryService.deleteProduct(productId);
+        return "Product deleted successfully";
+    }
+
+    // Get stock of product
     @GetMapping("/stock/{productId}")
     public Stock getStock(@PathVariable Long productId){
         return inventoryService.getStock(productId);
     }
 
-    // Admin: Update stock
+    // Update stock
     @PutMapping("/stock/{productId}")
     public Stock updateStock(@PathVariable Long productId,
                              @RequestParam int quantity){
         return inventoryService.updateStock(productId, quantity);
     }
 
-    // Customer: Reduce stock after order
+    // Increase stock (restock)
+    @PutMapping("/restock/{productId}")
+    public Stock increaseStock(@PathVariable Long productId,
+                               @RequestParam int quantity){
+        return inventoryService.increaseStock(productId, quantity);
+    }
+
+    // Reduce stock when order placed
     @PutMapping("/reduce/{productId}")
     public String reduceStock(@PathVariable Long productId,
                               @RequestParam int quantity){
         return inventoryService.reduceStock(productId, quantity);
+    }
+
+    // Check stock availability (used by order service)
+    @GetMapping("/check/{productId}")
+    public boolean checkStock(@PathVariable Long productId,
+                              @RequestParam int quantity){
+        return inventoryService.checkStock(productId, quantity);
     }
 }
