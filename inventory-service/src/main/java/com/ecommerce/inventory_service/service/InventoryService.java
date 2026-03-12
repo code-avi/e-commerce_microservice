@@ -4,13 +4,12 @@ import com.ecommerce.inventory_service.dto.ProductRequestDTO;
 import com.ecommerce.inventory_service.dto.ProductResponseDTO;
 import com.ecommerce.inventory_service.entity.Product;
 import com.ecommerce.inventory_service.entity.Stock;
+import com.ecommerce.inventory_service.exception.ResourceNotFoundException;
 import com.ecommerce.inventory_service.repository.ProductRepository;
 import com.ecommerce.inventory_service.repository.StockRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,37 +51,43 @@ public class InventoryService {
 
             Stock stock = stockRepository.findById(product.getProductId())
                     .orElseThrow(() ->
-                            new ResponseStatusException(HttpStatus.NOT_FOUND,"Stock not found"));
+                            new ResourceNotFoundException("Stock not found"));
 
             return convertToDTO(product, stock);
 
         }).collect(Collectors.toList());
     }
 
-    // Get product
+    // Get single product
     public ProductResponseDTO getProduct(Long productId){
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND,"Product not found"));
+                        new ResourceNotFoundException("Product not found"));
 
         Stock stock = stockRepository.findById(productId)
                 .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND,"Stock not found"));
+                        new ResourceNotFoundException("Stock not found"));
 
         return convertToDTO(product, stock);
     }
 
     // Delete product
     public void deleteProduct(Long productId){
+
+        if(!productRepository.existsById(productId)){
+            throw new ResourceNotFoundException("Product not found");
+        }
+
         productRepository.deleteById(productId);
     }
 
     // Get stock
     public Stock getStock(Long productId){
+
         return stockRepository.findById(productId)
                 .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND,"Stock not found"));
+                        new ResourceNotFoundException("Stock not found"));
     }
 
     // Update stock
@@ -90,7 +95,7 @@ public class InventoryService {
 
         Stock stock = stockRepository.findById(productId)
                 .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND,"Stock not found"));
+                        new ResourceNotFoundException("Stock not found"));
 
         stock.setAvailableQuantity(quantity);
 
@@ -102,9 +107,11 @@ public class InventoryService {
 
         Stock stock = stockRepository.findById(productId)
                 .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND,"Stock not found"));
+                        new ResourceNotFoundException("Stock not found"));
 
-        stock.setAvailableQuantity(stock.getAvailableQuantity() + quantity);
+        stock.setAvailableQuantity(
+                stock.getAvailableQuantity() + quantity
+        );
 
         return stockRepository.save(stock);
     }
@@ -114,13 +121,15 @@ public class InventoryService {
 
         Stock stock = stockRepository.findById(productId)
                 .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND,"Stock not found"));
+                        new ResourceNotFoundException("Stock not found"));
 
         if(stock.getAvailableQuantity() < quantity){
-            return "Not enough stock";
+            throw new RuntimeException("Not enough stock available");
         }
 
-        stock.setAvailableQuantity(stock.getAvailableQuantity() - quantity);
+        stock.setAvailableQuantity(
+                stock.getAvailableQuantity() - quantity
+        );
 
         stockRepository.save(stock);
 
@@ -132,7 +141,7 @@ public class InventoryService {
 
         Stock stock = stockRepository.findById(productId)
                 .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND,"Stock not found"));
+                        new ResourceNotFoundException("Stock not found"));
 
         return stock.getAvailableQuantity() >= quantity;
     }
