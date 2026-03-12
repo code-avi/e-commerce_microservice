@@ -1,30 +1,21 @@
-package com.ecommerce.inventory_service.entity;
+package com.ecommerce.inventory_service.dto;
 
-import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+public class ProductResponseDTO {
 
-
-@Entity
-public class Product {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productId;
-
     private String name;
-
     private double price;
-
     private String details;
+    private int availableQuantity;
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private Stock stock;
-
-    public Product() {}
+    public ProductResponseDTO(){}
 
     public Long getProductId() {
         return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
     }
 
     public String getName() {
@@ -51,10 +42,11 @@ public class Product {
         this.details = details;
     }
 
-    public Stock getStock() {
-        return stock;
+    public int getAvailableQuantity() {
+        return availableQuantity;
     }
-    public void setStock(Stock stock) {
-        this.stock = stock;
+
+    public void setAvailableQuantity(int availableQuantity) {
+        this.availableQuantity = availableQuantity;
     }
 }

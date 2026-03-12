@@ -1,8 +1,10 @@
 package com.ecommerce.inventory_service.controller;
 
-import com.ecommerce.inventory_service.entity.Product;
+import com.ecommerce.inventory_service.dto.ProductRequestDTO;
+import com.ecommerce.inventory_service.dto.ProductResponseDTO;
 import com.ecommerce.inventory_service.entity.Stock;
 import com.ecommerce.inventory_service.service.InventoryService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,19 +19,19 @@ public class InventoryController {
 
     // Add new product
     @PostMapping("/product")
-    public Product addProduct(@RequestBody Product product){
-        return inventoryService.addProduct(product);
+    public ProductResponseDTO addProduct(@RequestBody ProductRequestDTO request){
+        return inventoryService.addProduct(request);
     }
 
     // Get all products
     @GetMapping("/products")
-    public List<Product> getAllProducts(){
+    public List<ProductResponseDTO> getAllProducts(){
         return inventoryService.getAllProducts();
     }
 
     // Get product details
     @GetMapping("/product/{productId}")
-    public Product getProduct(@PathVariable Long productId){
+    public ProductResponseDTO getProduct(@PathVariable Long productId){
         return inventoryService.getProduct(productId);
     }
 
@@ -67,7 +69,7 @@ public class InventoryController {
         return inventoryService.reduceStock(productId, quantity);
     }
 
-    // Check stock availability (used by order service)
+    // Check stock availability
     @GetMapping("/check/{productId}")
     public boolean checkStock(@PathVariable Long productId,
                               @RequestParam int quantity){
