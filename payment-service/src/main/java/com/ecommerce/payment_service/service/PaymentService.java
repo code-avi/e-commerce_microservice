@@ -1,6 +1,7 @@
 package com.ecommerce.payment_service.service;
 
 import com.ecommerce.payment_service.model.Payment;
+import com.ecommerce.payment_service.model.PaymentStatus;
 import com.ecommerce.payment_service.repository.PaymentRepository;
 import com.ecommerce.payment_service.dto.PaymentRequestDTO;
 import com.ecommerce.payment_service.dto.PaymentResponseDTO;
@@ -28,6 +29,7 @@ public class PaymentService {
         payment.setPaymentMethod(
                 PaymentMethod.valueOf(request.getPaymentMethod())
         );
+        payment.setPaymentStatus(PaymentStatus.SUCCESS);
 
         Payment savedPayment = paymentRepository.save(payment);
 
