@@ -18,6 +18,7 @@ public class OrderController {
         this.orderService = orderService;
     }
 
+    // create order manually
     @PostMapping
     public Order createOrder(Authentication authentication,
                              @RequestBody Order order){
@@ -27,6 +28,7 @@ public class OrderController {
         return orderService.createOrder(username,order);
     }
 
+    // get orders of logged user
     @GetMapping
     public List<Order> getOrders(Authentication authentication){
 
@@ -35,9 +37,19 @@ public class OrderController {
         return orderService.getOrders(username);
     }
 
+    // cancel order
     @PutMapping("/cancel/{orderId}")
     public Order cancelOrder(@PathVariable Long orderId){
 
         return orderService.cancelOrder(orderId);
+    }
+
+    // checkout cart -> create order
+    @PostMapping("/checkout")
+    public Order checkout(Authentication authentication){
+
+        String username = authentication.getName();
+
+        return orderService.checkout(username);
     }
 }

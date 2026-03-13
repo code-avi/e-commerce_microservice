@@ -1,5 +1,6 @@
 package com.ecommerce.order_service.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ public class Cart {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy="cart",cascade=CascadeType.ALL)
+    @JsonManagedReference
     private List<CartItem> items;
 
     public Cart() {

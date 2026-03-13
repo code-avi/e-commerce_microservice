@@ -1,48 +1,94 @@
 package com.ecommerce.order_service.service;
 
-import com.ecommerce.order_service.exception.InvalidOrderStateException;
-import com.ecommerce.order_service.exception.OrderNotFoundException;
-import com.ecommerce.order_service.model.Order;
-import com.ecommerce.order_service.model.OrderStatus;
-import com.ecommerce.order_service.repository.OrderRepository;
+import com.ecommerce.order_service.model.*;
+import com.ecommerce.order_service.repository.*;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
+    private final OrderItemRepository orderItemRepository;
 
-    public OrderService(OrderRepository orderRepository){
+    public OrderService(OrderRepository orderRepository,
+                        CartRepository cartRepository,
+                        CartItemRepository cartItemRepository,
+                        OrderItemRepository orderItemRepository) {
+
         this.orderRepository = orderRepository;
+        this.cartRepository = cartRepository;
+        this.cartItemRepository = cartItemRepository;
+        this.orderItemRepository = orderItemRepository;
     }
 
-    public Order createOrder(String username, Order order){
+    // CHECKOUT CART -> CREATE ORDER
+    public Order checkout(String username){
 
+        Cart cart = cartRepository.findByUserId(username)
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        List<CartItem> cartItems = cartItemRepository.findByCart(cart);
+
+        if(cartItems.isEmpty()){
+            throw new RuntimeException("Cart is empty");
+        }
+
+        Order order = new Order();
         order.setUserId(username);
         order.setOrderDate(LocalDateTime.now());
         order.setStatus(OrderStatus.PENDING);
 
-        order.getItems().forEach(i -> i.setOrder(order));
+        double total = 0;
 
+        List<OrderItem> orderItems = new ArrayList<>();
+
+        for(CartItem cartItem : cartItems){
+
+            OrderItem orderItem = new OrderItem();
+
+            orderItem.setProductId(cartItem.getProductId());
+            orderItem.setQuantity(cartItem.getQuantity());
+            orderItem.setPrice(cartItem.getPrice());
+            orderItem.setOrder(order);
+
+            total += cartItem.getPrice() * cartItem.getQuantity();
+
+            orderItems.add(orderItem);
+        }
+
+        order.setTotalAmount(total);
+        order.setItems(orderItems);
+
+        Order savedOrder = orderRepository.save(order);
+
+        // Clear cart after checkout
+        cartItemRepository.deleteAll(cartItems);
+
+        return savedOrder;
+    }
+
+    public Order createOrder(String username, Order order){
+        order.setUserId(username);
+        order.setOrderDate(LocalDateTime.now());
+        order.setStatus(OrderStatus.PENDING);
         return orderRepository.save(order);
     }
 
     public List<Order> getOrders(String username){
-
         return orderRepository.findByUserId(username);
     }
 
     public Order cancelOrder(Long orderId){
 
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new OrderNotFoundException("ORDER_NOT_FOUND"));
-
-        if(order.getStatus() == OrderStatus.SHIPPED){
-            throw new InvalidOrderStateException("ORDER_ALREADY_SHIPPED");
-        }
+                .orElseThrow(() -> new RuntimeException("Order not found"));
 
         order.setStatus(OrderStatus.CANCELLED);
 
