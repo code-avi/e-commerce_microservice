@@ -15,7 +15,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderId;
 
-    private Long userId;
+    private String userId; // username from JWT
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
@@ -29,7 +29,7 @@ public class Order {
     public Order() {
     }
 
-    public Order(Long orderId, Long userId, OrderStatus status, Double totalAmount, LocalDateTime orderDate, List<OrderItem> items) {
+    public Order(Long orderId, String userId, OrderStatus status, Double totalAmount, LocalDateTime orderDate, List<OrderItem> items) {
         this.orderId = orderId;
         this.userId = userId;
         this.status = status;
@@ -54,11 +54,11 @@ public class Order {
         this.orderId = orderId;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

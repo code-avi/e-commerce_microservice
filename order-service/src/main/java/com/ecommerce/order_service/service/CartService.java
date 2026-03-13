@@ -18,23 +18,23 @@ public class CartService {
     public CartService(CartRepository cartRepository,
                        CartItemRepository cartItemRepository){
 
-        this.cartRepository=cartRepository;
-        this.cartItemRepository=cartItemRepository;
+        this.cartRepository = cartRepository;
+        this.cartItemRepository = cartItemRepository;
     }
 
-    public Cart getCart(Long userId){
+    public Cart getCart(String username){
 
-        return cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new CartNotFoundException("Cart not found"));
+        return cartRepository.findByUserId(username)
+                .orElseThrow(() -> new CartNotFoundException("CART_NOT_FOUND"));
     }
 
-    public Cart addItem(Long userId, CartItem item){
+    public Cart addItem(String username, CartItem item){
 
-        Cart cart = cartRepository.findByUserId(userId)
+        Cart cart = cartRepository.findByUserId(username)
                 .orElseGet(() -> {
 
                     Cart newCart = new Cart();
-                    newCart.setUserId(userId);
+                    newCart.setUserId(username);
                     newCart.setCreatedAt(LocalDateTime.now());
 
                     return cartRepository.save(newCart);
@@ -51,5 +51,4 @@ public class CartService {
 
         cartItemRepository.deleteById(itemId);
     }
-
 }

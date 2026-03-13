@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -24,51 +25,58 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain)
             throws ServletException, IOException {
 
         final String authHeader = request.getHeader("Authorization");
 
+        // If header missing or invalid, continue without authentication
         if (!StringUtils.hasText(authHeader) || !authHeader.startsWith("Bearer ")) {
 
-            filterChain.doFilter(request,response);
+            filterChain.doFilter(request, response);
             return;
         }
 
         try {
 
+            // Extract token
             String token = authHeader.substring(7);
 
-            if(jwtService.isTokenValid(token)){
+            // Validate token
+            if (jwtService.isTokenValid(token)) {
 
                 String username = jwtService.extractUsername(token);
 
-                UsernamePasswordAuthenticationToken authToken =
+                // Create authentication object
+                UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 username,
                                 null,
                                 Collections.emptyList()
                         );
 
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                // Set authentication in context
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
 
         } catch (Exception ex) {
 
-            System.out.println("JWT Error: "+ex.getMessage());
+            System.out.println("JWT Error: " + ex.getMessage());
         }
 
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
     }
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request){
+    protected boolean shouldNotFilter(HttpServletRequest request) {
 
         String path = request.getServletPath();
 
-        return path.startsWith("/h2-console")
+        return path.startsWith("/auth")
+                || path.startsWith("/h2-console")
                 || path.startsWith("/swagger")
                 || path.startsWith("/v3/api-docs");
     }

@@ -3,6 +3,9 @@ package com.ecommerce.order_service.controller;
 import com.ecommerce.order_service.model.Cart;
 import com.ecommerce.order_service.model.CartItem;
 import com.ecommerce.order_service.service.CartService;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -12,20 +15,27 @@ public class CartController {
     private final CartService cartService;
 
     public CartController(CartService cartService){
-        this.cartService=cartService;
+        this.cartService = cartService;
     }
 
-    @PostMapping("/add/{userId}")
-    public Cart addItem(@PathVariable Long userId,
-                        @RequestBody CartItem item){
+        @PostMapping("/add")
+        public Cart addItem(Authentication authentication,
+                            @RequestBody CartItem item){
 
-        return cartService.addItem(userId,item);
-    }
+            String username = SecurityContextHolder
+                    .getContext()
+                    .getAuthentication()
+                    .getName();
 
-    @GetMapping("/{userId}")
-    public Cart getCart(@PathVariable Long userId){
+            return cartService.addItem(username,item);
+        }
 
-        return cartService.getCart(userId);
+    @GetMapping
+    public Cart getCart(Authentication authentication){
+
+        String username = authentication.getName();
+
+        return cartService.getCart(username);
     }
 
     @DeleteMapping("/remove/{itemId}")
@@ -33,6 +43,6 @@ public class CartController {
 
         cartService.removeItem(itemId);
 
-        return "Item removed";
+        return "Item removed from cart";
     }
 }

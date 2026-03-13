@@ -13,7 +13,7 @@ public class Cart {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long cartId;
 
-    private Long userId;
+    private String userId;
 
     private LocalDateTime createdAt;
 
@@ -23,7 +23,7 @@ public class Cart {
     public Cart() {
     }
 
-    public Cart(Long cartId, Long userId, LocalDateTime createdAt, List<CartItem> items) {
+    public Cart(Long cartId, String userId, LocalDateTime createdAt, List<CartItem> items) {
         this.cartId = cartId;
         this.userId = userId;
         this.createdAt = createdAt;
@@ -38,11 +38,11 @@ public class Cart {
         this.cartId = cartId;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

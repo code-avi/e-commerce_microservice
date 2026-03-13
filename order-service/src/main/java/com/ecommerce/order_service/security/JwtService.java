@@ -29,13 +29,9 @@ public class JwtService {
     public boolean isTokenValid(String token) {
 
         try {
-
             extractAllClaims(token);
-
             return true;
-
         } catch (Exception ex) {
-
             return false;
         }
     }
